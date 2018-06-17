@@ -35,7 +35,7 @@ def selectButtons() {
         }
        section {
             label(title: "Label this SmartApp", required: false, defaultValue: "Leviton VRCZ4-M0Z Switch Mapper")
-        }  
+        }
     }
 }
 
@@ -55,9 +55,9 @@ def initialize() {
     // subscribe(buttonDevice, "level", levelEvent)
     (1..4).each {
     	def devices = settings['switches_'+it]
-        // log.debug "Devices for Button ${it}: ${devices}"
+        log.debug "Devices for Button ${it}: ${devices}"
         if (devices) {
-        	// log.debug "${devices.deviceNetworkId.join(',')}"
+        	log.debug "${devices.deviceNetworkId.join(',')}"
         	buttonDevice.setButton(it, devices.deviceNetworkId.join(','))
     		subscribe(devices, 'switch', updateLights)
         }
@@ -71,37 +71,37 @@ def configured() {
 
 def buttonEvent(evt){
     def data = parseJson(evt.data)
-    // log.debug "buttonEvent data: ${data}"
-    
+    log.debug "buttonEvent data: ${data}"
+
     switch (data.button) {
     	case "0":
             atomicState.dimmingNow = (data.status == "start") ? true : false
-            // log.debug "atomicState.dimmingNow set to ${atomicState.dimmingNow}"
+            log.debug "atomicState.dimmingNow set to ${atomicState.dimmingNow}"
         	if (atomicState.dimmingNow) {
                 startDimming(data.switch, data.direction)
             }
             break
     	case "1":
-        	// log.debug "Turning ${data.status} switches for button 1"
+        	log.debug "Turning ${data.status} switches for button 1"
         	(data.status == "on") ? switches_1.on() : switches_1.off()
-        	break        
+        	break
     	case "2":
-        	// log.debug "Turning ${data.status} switches for button 2"
+        	log.debug "Turning ${data.status} switches for button 2"
         	(data.status == "on") ? switches_2.on() : switches_2.off()
-        	break        
+        	break
     	case "3":
-        	// log.debug "Turning ${data.status} switches for button 3"
+        	log.debug "Turning ${data.status} switches for button 3"
         	(data.status == "on") ? switches_3.on() : switches_3.off()
-        	break        
+        	break
     	case "4":
-        	// log.debug "Turning ${data.status} switches for button 4"
+        	log.debug "Turning ${data.status} switches for button 4"
         	(data.status == "on") ? switches_4.on() : switches_4.off()
         	break
         default:
-            // log.debug "Falling through to default case for buttonEvent() on event ${evt} with evt.data ${evt.data} parsed to ${data} with status ${data.status} for button ${data.button}"
+            log.debug "Falling through to default case for buttonEvent() on event ${evt} with evt.data ${evt.data} parsed to ${data} with status ${data.status} for button ${data.button}"
         	break
     }
-   
+
     /*
     (1..4).each {
       settings['switches_'+it].each {
@@ -118,7 +118,7 @@ def buttonEvent(evt){
 }
 
 def startDimming(buttonNumber, direction) {
-    // log.debug "Starting dimming ${direction} for button #${buttonNumber}"
+    log.debug "Starting dimming ${direction} for button #${buttonNumber}"
     def increment = (direction == "up") ? 1 : -1
     def buttonDevices = switches_1
     def startLevels = switches_1*.currentValue("level")
@@ -140,17 +140,17 @@ def startDimming(buttonNumber, direction) {
 }
 
 def doDimming(buttonDevices, startLevels, increment) {
-    // log.debug "Dimming ${buttonDevices} from ${workingLevels} by ${increment}"
+    log.debug "Dimming ${buttonDevices} from ${workingLevels} by ${increment}"
     for (;;) {
     	def newLevels = []
-        buttonDevices.eachWithIndex {device, i -> 
+        buttonDevices.eachWithIndex {device, i ->
         	def workingLevel = startLevels[i]
-            // log.debug "Current level for ${device} is ${workingLevel}"
+            log.debug "Current level for ${device} is ${workingLevel}"
             workingLevel += increment
-            // log.debug "New level for ${device} is ${workingLevel}"
+            log.debug "New level for ${device} is ${workingLevel}"
             workingLevel = (workingLevel < 100) ? workingLevel : 100
             workingLevel = (workingLevel > 0) ? workingLevel : 0
-            // log.debug "Final level for ${device} is ${workingLevel}"
+            log.debug "Final level for ${device} is ${workingLevel}"
             device.setLevel(workingLevel)
             newLevels << workingLevel
         }
@@ -163,11 +163,11 @@ def doDimming(buttonDevices, startLevels, increment) {
 
 def updateLights(evt)
 {
-	// log.debug "updateLights evt = ${evt}"
-    // log.debug "Button 1: ${switches_1*.currentValue('switch')}"
-    // log.debug "Button 2: ${switches_2*.currentValue('switch')}"
-    // log.debug "Button 3: ${switches_3*.currentValue('switch')}"
-    // log.debug "Button 4: ${switches_4*.currentValue('switch')}"
+	log.debug "updateLights evt = ${evt}"
+  log.debug "Button 1: ${switches_1*.currentValue('switch')}"
+  log.debug "Button 2: ${switches_2*.currentValue('switch')}"
+  log.debug "Button 3: ${switches_3*.currentValue('switch')}"
+  log.debug "Button 4: ${switches_4*.currentValue('switch')}"
 	def one = switches_1*.currentValue('switch').contains('on')
 	def two = switches_2*.currentValue('switch').contains('on')
 	def three = switches_3*.currentValue('switch').contains('on')
