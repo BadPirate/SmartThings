@@ -96,31 +96,31 @@ def handleManufacturerProprietary(String description) {
 	switch (description) {
     	case "zw device: ${device.deviceNetworkId}, command: 9100, payload: 1D 0C 01 00 ":
         case "1":
-        	// log.debug "Turning button #1 on"
+        	log.debug "Turning button #1 on"
             updateState("currentButton", "1")
             result << createEvent(name: "button", value: "on", data: [button: 1, status: "on"], isStateChange: true)
         	break
     	case "zw device: ${device.deviceNetworkId}, command: 9100, payload: 1D 0C 05 00 ":
         case "5":
-        	// log.debug "Turning button #1 off"
+        	log.debug "Turning button #1 off"
             updateState("currentButton", "1")
             result << createEvent(name: "button", value: "off", data: [button: 1, status: "off"], isStateChange: true)
         	break
     	case "zw device: ${device.deviceNetworkId}, command: 9100, payload: 1D 0C 02 00 ":
         case "2":
-        	// log.debug "Turning button #2 on"
+        	log.debug "Turning button #2 on"
             updateState("currentButton", "2")
             result << createEvent(name: "button", value: "on", data: [button: 2, status: "on"], isStateChange: true)
         	break
     	case "zw device: ${device.deviceNetworkId}, command: 9100, payload: 1D 0C 06 00 ":
         case "6":
-        	// log.debug "Turning button #2 off"
+        	log.debug "Turning button #2 off"
             updateState("currentButton", "2")
             result << createEvent(name: "button", value: "off", data: [button: 2, status: "off"], isStateChange: true)
         	break
     	case "zw device: ${device.deviceNetworkId}, command: 9100, payload: 1D 0C 03 00 ":
         case "3":
-        	// log.debug "Turning button #3 on"
+        	log.debug "Turning button #3 on"
             updateState("currentButton", "3")
             result << createEvent(name: "button", value: "on", data: [button: 3, status: "on"], isStateChange: true)
         	break
@@ -131,18 +131,18 @@ def handleManufacturerProprietary(String description) {
         	break
     	case "zw device: ${device.deviceNetworkId}, command: 9100, payload: 1D 0C 04 00 ":
         case "4":
-        	// log.debug "Turning button #4 on"
+        	log.debug "Turning button #4 on"
             updateState("currentButton", "4")
             result << createEvent(name: "button", value: "on", data: [button: 4, status: "on"], isStateChange: true)
         	break
     	case "zw device: ${device.deviceNetworkId}, command: 9100, payload: 1D 0C 08 00 ":
         case "8":
-        	// log.debug "Turning button #4 off"
+        	log.debug "Turning button #4 off"
             updateState("currentButton", "4")
             result << createEvent(name: "button", value: "off", data: [button: 4, status: "off"], isStateChange: true)
         	break
         default:
-        	// log.debug "Fell through to default switch case"
+        	log.debug "Fell through to default switch case"
         	break
     }
 
@@ -162,10 +162,10 @@ def buttonEvent(button) {
 
     // updateState("currentButton", "$button")
     // handleManufacturerProprietary(button.toString())
-    if (button > 0) {    
+    if (button > 0) {
         // update the device state, recording the button press
-        // log.debug "${device.displayName} button ${button} was pushed"
-        // log.debug "Turning button #${buttonToSwitch(button)} ${buttonToStatus(button)}"
+        log.debug "${device.displayName} button ${button} was pushed"
+        log.debug "Turning button #${buttonToSwitch(button)} ${buttonToStatus(button)}"
         updateState("currentButton", buttonToSwitch(button))
         result << createEvent(name: "button", value: "off", data: [button: buttonToSwitch(button), status: buttonToStatus(button)], isStateChange: true)
         // result << createEvent(name: "button", value: /*"pushed"*/ "button $button", data: [buttonNumber: button], descriptionText: "$device.displayName button $button was pushed", isStateChange: true)
@@ -193,7 +193,7 @@ def buttonToStatus(button)
 
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd)
 {
-	// log.debug "BasicReport: ${cmd}"
+	log.debug "BasicReport: ${cmd}"
     def result = []
     result << createEvent(name:"switch", value: cmd.value ? "on" : "off")
 
@@ -204,12 +204,12 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd)
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd) {
-	// log.debug "SwitchBinaryReport: ${cmd}"
+	log.debug "SwitchBinaryReport: ${cmd}"
     createEvent(name:"switch", value: cmd.value ? "on" : "off")
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelReport cmd) {
-	// log.debug "SwitchMultilevelReport: ${cmd}"
+	log.debug "SwitchMultilevelReport: ${cmd}"
     def result = []
     result << createEvent(name:"switch", value: cmd.value ? "on" : "off")
     result << createEvent(name:"level", value: cmd.value, unit:"%", descriptionText:"${device.displayName} dimmed ${cmd.value==255 ? 100 : cmd.value}%")
@@ -228,10 +228,10 @@ def zwaveEVent (physicalgraph.zwave.commands.sceneactuatorconfv1.SceneActuatorCo
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.sceneactivationv1.SceneActivationSet cmd) {
-	// log.debug "Entering zwaveEvent handler for SceneActivationSet with cmd = ${cmd}"
+	log.debug "Entering zwaveEvent handler for SceneActivationSet with cmd = ${cmd}"
 	// The controller likes to repeat the command... ignore repeats
 	if (state.lastScene == cmd.sceneId && (state.repeatCount < 4) && (now() - state.repeatStart < 2000)) {
-    	// log.debug "Button ${cmd.sceneId} repeat ${state.repeatCount}x ${now()}"
+    	log.debug "Button ${cmd.sceneId} repeat ${state.repeatCount}x ${now()}"
         state.repeatCount = state.repeatCount + 1
         createEvent([:])
     }
@@ -253,28 +253,28 @@ def zwaveEvent(physicalgraph.zwave.commands.sceneactuatorconfv1.SceneActuatorCon
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.sceneactuatorconfv1.SceneActuatorConfReport cmd) {
-    // log.debug "SceneActuatorConfReport: ${cmd}"
-	  // log.debug "Scene ${cmd.sceneId} set to ${cmd.level}"
+    log.debug "SceneActuatorConfReport: ${cmd}"
+	  log.debug "Scene ${cmd.sceneId} set to ${cmd.level}"
     createEvent([:])
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.scenecontrollerconfv1.SceneControllerConfReport cmd) {
-    // log.debug "Scene controller report: ${cmd}"
-	// log.debug "Group ${cmd.groupId} set to Scene ${cmd.sceneId}"
-    
+    log.debug "Scene controller report: ${cmd}"
+	log.debug "Group ${cmd.groupId} set to Scene ${cmd.sceneId}"
+
     // createEvent([:])
 }
 
 // Configuration Reports are replies to configuration value requests... If we knew what configuration parameters
 // to request this could be very helpful.
 def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {
-	// log.debug "Received configuration report ${cmd}"
+	log.debug "Received configuration report ${cmd}"
 	createEvent([:])
 }
 
 // The VRC supports hail commands, but I haven't seen them.
 def zwaveEvent(physicalgraph.zwave.commands.hailv1.Hail cmd) {
-	// log.debug "Hail command received" 
+	log.debug "Hail command received" 
     createEvent([name: "hail", value: "hail", descriptionText: "Switch button was pressed", displayed: false])
 }
 
@@ -297,7 +297,7 @@ def zwaveEvent(physicalgraph.zwave.commands.associationv2.AssociationGroupingsRe
     log.debug "${getDataByName("numButtons")} buttons stored"
 	if (getDataByName("numButtons") != "$cmd.supportedGroupings") {
 		updateState("numButtons", "$cmd.supportedGroupings")
-        // log.debug "${cmd.supportedGroupings} groups available"
+        log.debug "${cmd.supportedGroupings} groups available"
         response << createEvent(name: "numButtons", value: cmd.supportedGroupings, displayed: false)
 
         response << associateHub()
@@ -310,14 +310,14 @@ def zwaveEvent(physicalgraph.zwave.commands.associationv2.AssociationGroupingsRe
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.associationv2.AssociationReport cmd) {
-	// log.debug "Association report V2: ${cmd}" 
+	log.debug "Association report V2: ${cmd}" 
 	def commands = []
     def buttonlist = ['x', state.button1.split(','), state.button2.split(','), state.button3.split(','), state.button4.split(',')]
-    // log.debug "buttonlist: ${buttonlist}"
-    cmd.nodeId.each({// log.debug "AssociationReport: '${cmd}', hub: '$zwaveHubNodeId' reports nodeId: '$it' is associated in group: '${cmd.groupingIdentifier}'"
+    log.debug "buttonlist: ${buttonlist}"
+    cmd.nodeId.each({log.debug "AssociationReport: '${cmd}', hub: '$zwaveHubNodeId' reports nodeId: '$it' is associated in group: '${cmd.groupingIdentifier}'"
     	if((it != zwaveHubNodeId) && (!buttonlist[integer(cmd.groupingIdentifier)].contains(Integer.toHexString(it).toUpperCase())))
         {
-        	 // log.debug "$it couldn't find " + Integer.toHexString(it).toUpperCase() + "in button ${cmd.groupingIdentifier}"
+        	 log.debug "$it couldn't find " + Integer.toHexString(it).toUpperCase() + "in button ${cmd.groupingIdentifier}"
         	 sendHubCommand(new physicalgraph.device.HubAction(zwave.associationV2.associationRemove(groupingIdentifier: cmd.groupingIdentifier, nodeId: it).format()))
         }
     })
@@ -325,12 +325,12 @@ def zwaveEvent(physicalgraph.zwave.commands.associationv2.AssociationReport cmd)
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.associationv1.AssociationReport cmd) {
-	// log.debug "Association report V1: ${cmd}" 
+	log.debug "Association report V1: ${cmd}" 
 	def commands = []
-    cmd.nodeId.each({// log.debug "AssociationReport v1: '${cmd}', hub: '$zwaveHubNodeId' reports nodeId: '$it' is associated in group: '${cmd.groupingIdentifier}'"
+    cmd.nodeId.each({log.debug "AssociationReport v1: '${cmd}', hub: '$zwaveHubNodeId' reports nodeId: '$it' is associated in group: '${cmd.groupingIdentifier}'"
         			 commands << zwave.associationV1.associationRemove(groupingIdentifier: cmd.groupingIdentifier, nodeId: it).format()
     })
-    // log.debug "Sending $commands"
+    log.debug "Sending $commands"
     return delayBetween(commands,100)
     //[:]
 }
@@ -347,7 +347,7 @@ def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelS
 
 // Handles all Z-Wave commands we don't know we are interested in
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
-	// log.debug "Default zwaveEvent handler: ${cmd}"
+	log.debug "Default zwaveEvent handler: ${cmd}"
     createEvent(descriptionText: "${device.displayName}: ${cmd}")
     // createEvent([:])
 }
@@ -376,17 +376,17 @@ def configurationCmds() {
 }
 
 def getparamState() {
-	// log.debug "Listing current parameter/attribute settings for ${device.displayName}..."
+	log.debug "Listing current parameter/attribute settings for ${device.displayName}..."
     def cmds = []
     sendHubCommand(new physicalgraph.device.HubAction("91001D0D01FF01180508D3"))
-    // log.debug "Sending $cmds to ${device.deviceNetworkId}..."
-    // log.debug "deviceNetworkId: ${device.deviceNetworkId}"
-    // log.debug "displayName: ${device.displayName}"
-    // log.debug "numButtons: ${state.numButtons}"
-    // log.debug "currentButton: ${state.currentButton}"
-    // log.debug "associatedLoad: ${associatedLoad}"
-    // log.debug "associatedLoadId: ${associatedLoadId}"
-    // log.debug "capabilityCommands = ${getDeviceCapabilityCommands(device.capabilities)}"
+    log.debug "Sending $cmds to ${device.deviceNetworkId}..."
+    log.debug "deviceNetworkId: ${device.deviceNetworkId}"
+    log.debug "displayName: ${device.displayName}"
+    log.debug "numButtons: ${state.numButtons}"
+    log.debug "currentButton: ${state.currentButton}"
+    log.debug "associatedLoad: ${associatedLoad}"
+    log.debug "associatedLoadId: ${associatedLoadId}"
+    log.debug "capabilityCommands = ${getDeviceCapabilityCommands(device.capabilities)}"
 }
 
 def setLightStatus(one,two,three,four)
@@ -425,17 +425,17 @@ def configure() {
 //
 // nodeId:  a hex string, ie 4E for the Z-Wave node number
 def associateLoad(String nodeId) {
-	// log.debug "Associating nodeId: ${nodeId}" 
+	log.debug "Associating nodeId: ${nodeId}" 
 	def node = integerhex(nodeId)
 
 	if (node != 0) {
     	updateState("associatedLoad", "1")
         updateState("associatedLoadId", nodeId)
-		// log.debug "Node $nodeId associated with button 1"
+		log.debug "Node $nodeId associated with button 1"
     }
     else {
     	updateState("associatedLoad", "0")
-        // log.debug "No nodes associated with button 1"
+        log.debug "No nodes associated with button 1"
     }
 
    	configure()
@@ -445,12 +445,12 @@ def associateLoad(String nodeId) {
 def associateHub() {
     def commands = []
     def buttonlist = ['x', state.button1, state.button2, state.button3, state.button4]
-    // log.debug "Entering associateHub() for ${device.displayName}..."
-    // log.debug "state = ${state}"
-    // log.debug "zwaveHubNodeId = ${[zwaveHubNodeId]}"
-    // log.debug "buttonlist = ${buttonlist}"
+    log.debug "Entering associateHub() for ${device.displayName}..."
+    log.debug "state = ${state}"
+    log.debug "zwaveHubNodeId = ${[zwaveHubNodeId]}"
+    log.debug "buttonlist = ${buttonlist}"
     for (def buttonNum = 1; buttonNum <= integer(getDataByName("numButtons")); buttonNum++) {
-		// log.debug "Loop for buttonNum = ${buttonNum}"
+		log.debug "Loop for buttonNum = ${buttonNum}"
        	commands << zwave.sceneControllerConfV1.sceneControllerConfSet(groupId: buttonNum, sceneId: buttonNum, dimmingDuration: buttonNum).format()
         commands << zwave.sceneControllerConfV1.sceneControllerConfSet(groupId: buttonNum+4, sceneId: buttonNum+4, dimmingDuration: buttonNum+4).format()
     	// commands << zwave.remoteAssociationActivateV1.remoteAssociationActivate(groupingIdentifier:buttonNum).format()  //***** Parse error on cmd: 9100, payload: 1D 0C 0x 00
@@ -467,7 +467,7 @@ def associateHub() {
         commands << zwave.associationV2.associationGet(groupingIdentifier:buttonNum+4).format()
     	// commands << zwave.associationV2.associationReport(groupingIdentifier:buttonNum).format()
     	// commands << zwave.associationV2.associationSpecificGroupReport(group:buttonNum).format()
-        // log.debug "commands: ${commands}"
+        log.debug "commands: ${commands}"
 	}
 
     return commands
@@ -494,7 +494,7 @@ def getDataByName(String name) {
  * @return a map of device capability -> supported commands.
 */
 def getDeviceCapabilityCommands(deviceCapabilities) {
-	// log.debug "Getting device capability commands: ${deviceCapabilities}"
+	log.debug "Getting device capability commands: ${deviceCapabilities}"
     def map = [:]
     deviceCapabilities.collect {
         map[it.name] = it.commands.collect{ it.name.toString() }

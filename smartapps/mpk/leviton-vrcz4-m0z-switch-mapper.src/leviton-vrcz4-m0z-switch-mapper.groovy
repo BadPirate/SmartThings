@@ -71,9 +71,9 @@ def configured() {
 }
 
 def buttonEvent(evt){
-	// log.debug "buttonEvent evt: ${evt}"
+	log.debug "buttonEvent evt: ${evt}"
     def data = parseJson(evt.data)
-    // log.debug "buttonEvent data: ${data}"
+    log.debug "buttonEvent data: ${data}"
     switch (data.button) {
     	case "0":
             atomicState.dimmingNow = (data.status == "start") ? true : false
